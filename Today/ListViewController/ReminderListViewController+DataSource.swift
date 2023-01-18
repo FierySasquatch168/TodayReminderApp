@@ -47,7 +47,7 @@ extension ReminderListViewController {
         updateSnapshot(reloading: [id])
     }
     
-    func doneButtonConfiguration(for reminder: Reminder) -> UICellAccessory.CustomViewConfiguration {
+    private func doneButtonConfiguration(for reminder: Reminder) -> UICellAccessory.CustomViewConfiguration {
         let symbolName = reminder.isComplete ? "checkmark.circle.fill" : "circle"
         let symbolConfiguration = UIImage.SymbolConfiguration(textStyle: .title1)
         let image = UIImage(systemName: symbolName, withConfiguration: symbolConfiguration)
@@ -63,8 +63,7 @@ extension ReminderListViewController {
     func doneButtonAccessibilityAction(for reminder: Reminder) -> UIAccessibilityCustomAction {
         let name = NSLocalizedString("Toggle completion", comment: "Reminder done button accessibility label")
         let action = UIAccessibilityCustomAction(name: name) { [weak self] action in
-            guard let self = self else { return }
-            self.completeReminder(with: reminder.id)
+            self?.completeReminder(with: reminder.id)
             return true
         }
         return action
