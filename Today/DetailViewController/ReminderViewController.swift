@@ -53,34 +53,22 @@ class ReminderViewController: UICollectionViewController {
         
     }
     
-    private func text(for row: Row) -> String? {
-        switch row {
-        case .viewDate:
-            return reminder.dueDate.dayText
-        case .viewTime:
-            return reminder.dueDate.formatted(date: .omitted, time: .shortened)
-        case .viewNotes:
-            return reminder.notes
-        case .viewTitle:
-            return reminder.title
-        default:
-            return nil
-        }
-    }
+    
     
     private func cellRegistrationHandler(cell: UICollectionViewListCell, indexPath: IndexPath, row: Row) {
         let section = section(for: indexPath)
         switch (section, row) {
         case (.view, _):
-            var contentConfiguration = cell.defaultContentConfiguration() // default list content configuration for the cell’s style
-            contentConfiguration.text = text(for: row)
-            contentConfiguration.textProperties.font = UIFont.preferredFont(forTextStyle: row.textStyle)
-            contentConfiguration.image = row.image
-            cell.contentConfiguration = contentConfiguration
+            cell.contentConfiguration = defaultConfiguration(for: cell, at: row)
         case (_, .header(let title)):
-            var contentConfiguration = cell.defaultContentConfiguration()
-            contentConfiguration.text = title
-            cell.contentConfiguration = contentConfiguration
+            cell.contentConfiguration = headerConfiguration(for: cell, with: title)
+        case (.title, .editText(let title)):
+            /// Assign the new title configuration to the cell configuration
+            cell.contentConfiguration = titleConfiguration(for: cell, with: title)
+        case (_, .editDate(let date)):
+            cell.contentConfiguration = dateConfiguration(for: cell, with: date)
+        case (_, .editText(let notes)):
+            cell.contentConfiguration = notesConfiguration(for: cell, with: notes)
         default:
             fatalError("Unexpected combination of section and row")
         }
@@ -102,13 +90,9 @@ class ReminderViewController: UICollectionViewController {
         var snapshot = Snapshot()
         snapshot.appendSections([.title, .date, .notes])
         
-        for item in snapshot.sectionIdentifiers {
-            snapshot.appendItems([.header(item.name)], toSection: item)
-        }
-        
-//        snapshot.appendItems([.header(Section.title.name)], toSection: .title)
-//        snapshot.appendItems([.header(Section.date.name)], toSection: .date)
-//        snapshot.appendItems([.header(Section.notes.name)], toSection: .notes)
+        snapshot.appendItems([.header(Section.title.name), .editText(reminder.title)], toSection: .title)
+        snapshot.appendItems([.header(Section.date.name), .editDate(reminder.dueDate)], toSection: .date)
+        snapshot.appendItems([.header(Section.notes.name), .editText(reminder.notes)], toSection: .notes)
         
         dataSource.apply(snapshot)
     }
