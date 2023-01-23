@@ -20,6 +20,7 @@
 		373DAD5F2977296D0062FA1E /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373DAD5E2977296D0062FA1E /* UIColor+Extension.swift */; };
 		3742817529783DEE00057D89 /* ReminderDoneButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3742817429783DEE00057D89 /* ReminderDoneButton.swift */; };
 		374281772978416700057D89 /* ReminderListViewController+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374281762978416700057D89 /* ReminderListViewController+Actions.swift */; };
+		37A9AD0F297E849B008C4418 /* ReminderViewController+Section.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A9AD0E297E849A008C4418 /* ReminderViewController+Section.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		373DAD5E2977296D0062FA1E /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		3742817429783DEE00057D89 /* ReminderDoneButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderDoneButton.swift; sourceTree = "<group>"; };
 		374281762978416700057D89 /* ReminderListViewController+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReminderListViewController+Actions.swift"; sourceTree = "<group>"; };
+		37A9AD0E297E849A008C4418 /* ReminderViewController+Section.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReminderViewController+Section.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 			children = (
 				371F7397297860A1008E1D30 /* ReminderViewController.swift */,
 				371F739A29786429008E1D30 /* ReminderViewController+Row.swift */,
+				37A9AD0E297E849A008C4418 /* ReminderViewController+Section.swift */,
 			);
 			path = DetailViewController;
 			sourceTree = "<group>";
@@ -182,6 +185,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				37A9AD0F297E849B008C4418 /* ReminderViewController+Section.swift in Sources */,
 				373DAD5F2977296D0062FA1E /* UIColor+Extension.swift in Sources */,
 				374281772978416700057D89 /* ReminderListViewController+Actions.swift in Sources */,
 				371F7398297860A1008E1D30 /* ReminderViewController.swift in Sources */,
