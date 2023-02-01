@@ -41,7 +41,7 @@ extension ReminderViewController {
             case .viewTitle:
                 return .headline
             default:
-                return.subheadline
+                return .subheadline
             }
         }
     }
