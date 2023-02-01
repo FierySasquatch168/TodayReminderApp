@@ -133,9 +133,9 @@
 			isa = PBXGroup;
 			children = (
 				37A9AD13297EABA0008C4418 /* UIView+PinnedSubview.swift */,
+				37A9AD17297EB58C008C4418 /* UIContentConfiguration+Stateless.swift */,
 				37A9AD15297EAFF8008C4418 /* TextFieldContentView.swift */,
 				37A9AD19297EBCE9008C4418 /* TextViewContentView.swift */,
-				37A9AD17297EB58C008C4418 /* UIContentConfiguration+Stateless.swift */,
 				376C649C297EFDCB000D2A83 /* DatePickerContentView.swift */,
 			);
 			path = ContentViews;
