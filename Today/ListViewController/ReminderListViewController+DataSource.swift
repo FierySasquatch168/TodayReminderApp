@@ -60,6 +60,15 @@ extension ReminderListViewController {
         return UICellAccessory.CustomViewConfiguration(customView: button, placement: .leading(displayed: .always))
     }
     
+    func addReminder(_ reminder: Reminder) {
+        reminders.append(reminder)
+    }
+    
+    func deleteReminder(withId id: Reminder.ID) {
+        let index = reminders.indexOfReminder(with: id)
+        reminders.remove(at: index)
+    }
+    
     func doneButtonAccessibilityAction(for reminder: Reminder) -> UIAccessibilityCustomAction {
         let name = NSLocalizedString("Toggle completion", comment: "Reminder done button accessibility label")
         let action = UIAccessibilityCustomAction(name: name) { [weak self] action in
@@ -79,15 +88,17 @@ extension ReminderListViewController {
         reminders[index] = reminder
     }
     
-    func updateSnapshot(reloading ids: [Reminder.ID] = []) {
+    func updateSnapshot(reloading idsThatChanged: [Reminder.ID] = []) {
+        let ids = idsThatChanged.filter({ id in filteredReminders.contains(where: { $0.id == id }) })
         var snapshot = Snapshot()
         snapshot.appendSections([0])
-        snapshot.appendItems(reminders.map({ $0.id }))
+        snapshot.appendItems(filteredReminders.map({ $0.id }))
         
         if !ids.isEmpty {
             snapshot.reloadItems(ids)
         }
         
         dataSource.apply(snapshot)
+        headerView?.progress = progress
     }
 }

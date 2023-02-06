@@ -11,9 +11,33 @@ class ReminderListViewController: UICollectionViewController {
     
     var dataSource: DataSource!
     var reminders: [Reminder] = Reminder.sampleData
+    var listStyle: ReminderListStyle = .today
+    var filteredReminders: [Reminder] {
+        return reminders.filter { listStyle.shouldInclude(date: $0.dueDate) }.sorted { $0.dueDate < $1.dueDate }
+    }
     
+    let listStyleSegmentedControl = UISegmentedControl(items:  [
+        ReminderListStyle.today.name,
+        ReminderListStyle.future.name,
+        ReminderListStyle.all.name
+    ])
+    
+    var headerView: ProgressHeaderView?
+    var progress: CGFloat {
+        let chunkSize = 1.0 / CGFloat(filteredReminders.count)
+        let progress = filteredReminders.reduce(0.0) {
+            let chunk = $1.isComplete ? chunkSize : 0
+            return $0 + chunk
+        }
+        return progress
+    }
+    
+    
+    // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.collectionView.backgroundColor = .todayGradientFutureBegin
         
         let listLayout = listLayout()
         collectionView.collectionViewLayout = listLayout
@@ -24,6 +48,29 @@ class ReminderListViewController: UICollectionViewController {
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
         }
         
+        let headerRegistration = UICollectionView.SupplementaryRegistration(
+            elementKind: ProgressHeaderView.elementKind,
+            handler: supplementaryRegistrationHandler)
+        
+        dataSource.supplementaryViewProvider = { supplementaryView, elementKind, indexPath in
+            return self.collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
+        }
+        
+        let addButton = UIBarButtonItem(
+            barButtonSystemItem: .add,
+            target: self,
+            action: #selector(didPressAddButton(_:)))
+        addButton.accessibilityLabel = NSLocalizedString("Add reminder", comment: "Add button accessibillity label")
+        navigationItem.rightBarButtonItem = addButton
+        
+        listStyleSegmentedControl.selectedSegmentIndex = listStyle.rawValue
+        listStyleSegmentedControl.addTarget(self, action: #selector(didChangeListStyle(_:)), for: .valueChanged)
+        navigationItem.titleView = listStyleSegmentedControl
+        
+        if #available(iOS 16, *) {
+            navigationItem.style = .navigator
+        }
+        
         updateSnapshot()
         
         collectionView.dataSource = dataSource
@@ -31,9 +78,17 @@ class ReminderListViewController: UICollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        let id = reminders[indexPath.item].id
+        let id = filteredReminders[indexPath.item].id
         showDetail(for: id)
         return false
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, willDisplaySupplementaryView view: UICollectionReusableView, forElementKind elementKind: String, at indexPath: IndexPath) {
+        guard elementKind == ProgressHeaderView.elementKind,
+              let progressView = view as? ProgressHeaderView else {
+            return
+        }
+        progressView.progress = progress
     }
     
     func showDetail(for id: Reminder.ID) {
@@ -48,8 +103,30 @@ class ReminderListViewController: UICollectionViewController {
     // creates new list configuration var with grouped appearance
     private func listLayout() -> UICollectionViewCompositionalLayout {
         var listConfiguration = UICollectionLayoutListConfiguration(appearance: .grouped)
+        listConfiguration.headerMode = .supplementary
         listConfiguration.showsSeparators = false
-        listConfiguration.backgroundColor = .systemBackground
+        listConfiguration.trailingSwipeActionsConfigurationProvider = makeSwipeActions
+        listConfiguration.backgroundColor = .clear
         return UICollectionViewCompositionalLayout.list(using: listConfiguration)
+    }
+    
+    private func makeSwipeActions(for indexPath: IndexPath?) -> UISwipeActionsConfiguration? {
+        guard let indexPath = indexPath,
+              let id = dataSource.itemIdentifier(for: indexPath) else {
+            return nil
+        }
+        let deleteActionTitle = NSLocalizedString("Delete", comment: "Delete action title")
+        let deleteAction = UIContextualAction(style: .destructive, title: deleteActionTitle) { [weak self] _, _, completion in
+            self?.deleteReminder(withId: id)
+            self?.updateSnapshot()
+            completion(false)
+        }
+        return UISwipeActionsConfiguration(actions: [deleteAction])
+    }
+    
+    private func supplementaryRegistrationHandler(progressView: ProgressHeaderView,
+                                                  elementKind: String,
+                                                  indexPath: IndexPath) {
+        headerView = progressView
     }
 }
